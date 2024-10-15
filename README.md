@@ -1,7 +1,5 @@
 # [NeurIPS 2024] "What If the Input is Expanded in OOD Detection?"
 
-The repository for paper "What If the Input is Expanded in OOD Detection?" accepted by NeurlPS'24.
-
 This codebase provides a Pytorch implementation for our proposed CoVer.
 
 # Required Packages

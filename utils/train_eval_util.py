@@ -15,6 +15,7 @@ imagenet_c = ["fog", "motion_blur", "brightness", "snow", "defocus_blur", "glass
                 "gaussian_noise", "shot_noise", "impulse_noise", "contrast", "elastic_transform", "pixelate", \
                 "jpeg_compression", "speckle_noise", "spatter", "gaussian_blur", "saturate", "zoom_blur"]
 
+
 def set_model_resnet50(args):
     # device = "cuda" if torch.cuda.is_available() else "cpu"
     # model = resnet50(weights=ResNet50_Weights.IMAGENET1K_V1)

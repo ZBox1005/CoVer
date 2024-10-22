@@ -38,7 +38,6 @@ def plot_all_aug_distribution(id_scores, all_aug_scores):
     for i in range(n_charts, n_rows * n_cols):
         fig.delaxes(axes.flatten()[i])
 
-    # plt.tight_layout()
     plt.savefig(os.path.join(f"visual/ImageNet/2/all_aug_methods.png"), bbox_inches='tight')
 
 def show_values_on_bars(axs):

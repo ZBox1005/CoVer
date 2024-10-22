@@ -62,8 +62,8 @@ To download these four test OOD datasets, one could follow the instructions in t
 ### Corrupted ID and OOD datasets
 We use the corruptions defined in [Hendrycks et al. 2019](https://arxiv.org/pdf/1903.12261) to expand the original single input dimension into a multi-dimensional one.
 The official ImageNet-C dataset can be downloaded [here](https://zenodo.org/records/2235448), which has all 1000 classes where each image is the standard size.
-
 We also provide a copy of the official implementation code for 18 types of corruptions at 5 severity levels in `utils/imagenet_c/make_imagenet_c.py`. 
+
 This implementation can also be used to implement the four corrupted OOD datasets, e.g. `iNaturalist-C`, `SUN-C`, `Places-C`, `Texture-C` and other ID datasets, e.g. `ImageNet-10-C`, `ImageNet-20-C`, `ImageNet-100-C`.
 
 To create a Corruption dataset, the following script can be used:
@@ -71,6 +71,8 @@ To create a Corruption dataset, the following script can be used:
 ```bash
 python utils/imagenet_c/make_imagenet_c.py
 ```
+
+We use the [SVHN](http://ufldl.stanford.edu/housenumbers/) dataset as the validation set to determine the most effective corruption types for each method in all experiments. The `SVHN-C` can also be created by following the above script.
 
 ### Overall Structure
 After introducing the corrupted datasets for input expansion, the overall file structure is as follows:
@@ -84,7 +86,7 @@ CoVer
           |-- iNaturalist
           |-- dtd
           |-- SUN
-          |-- Places
+          |-- Places 
         |-- iNaturalist
         |-- dtd
         |-- SUN

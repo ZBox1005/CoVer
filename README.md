@@ -109,7 +109,7 @@ The main script for evaluating OOD detection performance is `eval_ood_detection.
 
 The OOD detection results will be generated and stored in  `results/in_dataset/score/CLIP_ckpt/name/`. 
 
-Furthermore, the corruptions are selected in the main script `eval_ood_detection.py`, a Variable named `imagenet_c`.
+Furthermore, the corruptions are selected in the main script `eval_ood_detection.py`, a variable named `imagenet_c`. We also recommend several corruption types through the validation set verification, please feel free to try in `eval_ood_detection.py`.
 
 We provide bash scripts to help reproduce the numerical results of our paper.  
 

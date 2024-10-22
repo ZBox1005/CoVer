@@ -46,6 +46,7 @@ def process_args():
 
     args.n_cls = get_num_cls(args)
     args.log_directory = f"results/{args.in_dataset}/{args.score}/{args.model}_{args.CLIP_ckpt}_T_{args.T}_ID_{args.name}/"
+    
     for item in imagenet_c.items():
         method = item[0]
         args.log_directory += f"_{method}"

@@ -72,7 +72,7 @@ To create a Corruption dataset, the following script can be used:
 python utils/imagenet_c/make_imagenet_c.py
 ```
 
-We use the [SVHN](http://ufldl.stanford.edu/housenumbers/) dataset as the validation set to determine the most effective corruption types for each method in all experiments. The `SVHN-C` can also be created by following the above script.
+We use the [SVHN](http://ufldl.stanford.edu/housenumbers/) dataset as the validation set to determine the most effective corruption types for each method in all experiments. The `SVHN-C` can also be created by the above script.
 
 ### Overall Structure
 After introducing the corrupted datasets for input expansion, the overall file structure is as follows:

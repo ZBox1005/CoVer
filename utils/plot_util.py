@@ -30,13 +30,11 @@ def plot_all_aug_distribution(id_scores, all_aug_scores):
     fig, axes = plt.subplots(n_rows, n_cols, figsize=(100, 20 * n_rows))
 
     for ax, (name, aug_scores) in zip(axes.flatten(), all_aug_scores.items()):
-        # 使用seaborn绘制KDE图
         sns.kdeplot(-1 * id_scores, label="ID", fill=True, alpha=0.8, palette=palette1, ax=ax)
         sns.kdeplot(-1 * aug_scores, label="AUG", fill=True, alpha=0.8, palette=palette2, ax=ax)
         ax.set_title(name)
         ax.legend()
 
-    # 隐藏多余的子图
     for i in range(n_charts, n_rows * n_cols):
         fig.delaxes(axes.flatten()[i])
 
@@ -55,5 +53,3 @@ def show_values_on_bars(axs):
             _show_on_single_plot(ax)
     else:
         _show_on_single_plot(axs)
-
-

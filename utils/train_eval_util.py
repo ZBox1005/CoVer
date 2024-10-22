@@ -8,6 +8,8 @@ import open_clip
 from DNNs.resnet_ash import ResNet50, ResNet101
 from DNNs.resnet_dice import resnet50
 
+import utils.svhn_loader as svhn
+
 
 imagenet_c = ["fog", "motion_blur", "brightness", "snow", "defocus_blur", "glass_blur", \
                 "gaussian_noise", "shot_noise", "impulse_noise", "contrast", "elastic_transform", "pixelate", \
@@ -65,7 +67,7 @@ def set_model_clip(args):
     
     return model, val_preprocess
 
-def set_val_loader(args, preprocess=None):
+def set_id_loader(args, preprocess=None):
     root = args.root_dir
     if preprocess == None:
         normalize = transforms.Normalize(mean=(0.48145466, 0.4578275, 0.40821073),
@@ -75,7 +77,7 @@ def set_val_loader(args, preprocess=None):
             normalize
         ])
     kwargs = {'num_workers': 4, 'pin_memory': True}
-    aug_loader_dict = {}
+    aug_id_loader_dict = {}
     if args.in_dataset == "ImageNet":
         path = os.path.join(root, 'ImageNet', 'val')
 
@@ -86,7 +88,7 @@ def set_val_loader(args, preprocess=None):
             path_aug = os.path.join(root, 'DistortedImageNet', 'val')
 
         # Original Loader
-        val_loader = torch.utils.data.DataLoader(
+        id_loader = torch.utils.data.DataLoader(
             datasets.ImageFolder(path, transform=preprocess),
             batch_size=args.batch_size, shuffle=False, **kwargs)
 
@@ -101,13 +103,13 @@ def set_val_loader(args, preprocess=None):
 
                 aug_sets.append(testset)
                 aug_loaders.append(testloader)
-            aug_loader_dict[data] = aug_loaders
+            aug_id_loader_dict[data] = aug_loaders
 
     elif args.in_dataset in ["ImageNet10", "ImageNet20", "ImageNet100"]:
         path = os.path.join(root, args.in_dataset, 'val')
         path_aug = os.path.join(root, args.in_dataset, 'Distorted', 'val')
 
-        val_loader = torch.utils.data.DataLoader(
+        id_loader = torch.utils.data.DataLoader(
             datasets.ImageFolder(path, transform=preprocess),
             batch_size=args.batch_size, shuffle=False, **kwargs)
 
@@ -121,11 +123,11 @@ def set_val_loader(args, preprocess=None):
 
                 aug_sets.append(testset)
                 aug_loaders.append(testloader)
-            aug_loader_dict[data] = aug_loaders
+            aug_id_loader_dict[data] = aug_loaders
         
-    aug_loader_dict["origin"] = [val_loader]
+    aug_id_loader_dict["origin"] = [id_loader]
 
-    return val_loader, aug_loader_dict
+    return id_loader, aug_id_loader_dict
 
 
 def set_ood_loader_ImageNet(args, out_dataset, preprocess, root):
@@ -139,113 +141,129 @@ def set_ood_loader_ImageNet(args, out_dataset, preprocess, root):
         root_aug = os.path.join(root, 'Distorted_ResNet')
 
     # Store the Original and Corrupted loaders
-    aug_out_loader_dict = {}
+    aug_ood_loader_dict = {}
 
     if out_dataset == 'iNaturalist':
         testsetout = torchvision.datasets.ImageFolder(root=os.path.join(root, 'iNaturalist'), transform=preprocess)
         for data in imagenet_c:
-            aug_out_sets = []
-            aug_out_loaders = []
+            aug_ood_sets = []
+            aug_ood_loaders = []
             for aug_level in range(1,6):
                 aug_level = str(aug_level)
                 testset = torchvision.datasets.ImageFolder(root=f"{root_aug}" + "/iNaturalist/" + data + "/" + aug_level,
                                                         transform=preprocess)
                 testloader = torch.utils.data.DataLoader(testset, batch_size=args.batch_size, shuffle=False, num_workers=4)
-                aug_out_sets.append(testset)
-                aug_out_loaders.append(testloader)
-            aug_out_loader_dict[data] = aug_out_loaders
+                aug_ood_sets.append(testset)
+                aug_ood_loaders.append(testloader)
+            aug_ood_loader_dict[data] = aug_ood_loaders
 
     elif out_dataset == 'SUN':
         testsetout = torchvision.datasets.ImageFolder(root=os.path.join(root, 'SUN'), transform=preprocess)
         for data in imagenet_c:
-            aug_out_sets = []
-            aug_out_loaders = []
+            aug_ood_sets = []
+            aug_ood_loaders = []
             for aug_level in range(1,6):
                 aug_level = str(aug_level)
                 testset = torchvision.datasets.ImageFolder(root=f"{root_aug}" + "/SUN/" + data + "/" + aug_level,
                                                         transform=preprocess)
                 testloader = torch.utils.data.DataLoader(testset, batch_size=args.batch_size, shuffle=False, num_workers=4)
-                aug_out_sets.append(testset)
-                aug_out_loaders.append(testloader)
-            aug_out_loader_dict[data] = aug_out_loaders
+                aug_ood_sets.append(testset)
+                aug_ood_loaders.append(testloader)
+            aug_ood_loader_dict[data] = aug_ood_loaders
 
     elif out_dataset == 'places365':  # filtered places
         testsetout = torchvision.datasets.ImageFolder(root=os.path.join(root, 'Places'), transform=preprocess)
         for data in imagenet_c:
-            aug_out_sets = []
-            aug_out_loaders = []
+            aug_ood_sets = []
+            aug_ood_loaders = []
             for aug_level in range(1,6):
                 aug_level = str(aug_level)
                 testset = torchvision.datasets.ImageFolder(root=f"{root_aug}" + "/Places/" + data + "/" + aug_level,
                                                         transform=preprocess)
                 testloader = torch.utils.data.DataLoader(testset, batch_size=args.batch_size, shuffle=False, num_workers=4)
-                aug_out_sets.append(testset)
-                aug_out_loaders.append(testloader)
-            aug_out_loader_dict[data] = aug_out_loaders
+                aug_ood_sets.append(testset)
+                aug_ood_loaders.append(testloader)
+            aug_ood_loader_dict[data] = aug_ood_loaders
 
     elif out_dataset == 'placesbg':
         testsetout = torchvision.datasets.ImageFolder(root=os.path.join(root, 'placesbg'), transform=preprocess)
         for data in imagenet_c:
-            aug_out_sets = []
-            aug_out_loaders = []
+            aug_ood_sets = []
+            aug_ood_loaders = []
             for aug_level in range(1,6):
                 aug_level = str(aug_level)
                 testset = torchvision.datasets.ImageFolder(root=f"{root_aug}" + "/placesbg/" + data + "/" + aug_level,
                                                         transform=preprocess)
                 testloader = torch.utils.data.DataLoader(testset, batch_size=args.batch_size, shuffle=False, num_workers=4)
-                aug_out_sets.append(testset)
-                aug_out_loaders.append(testloader)
-            aug_out_loader_dict[data] = aug_out_loaders
+                aug_ood_sets.append(testset)
+                aug_ood_loaders.append(testloader)
+            aug_ood_loader_dict[data] = aug_ood_loaders
 
     elif out_dataset == 'dtd':
         testsetout = torchvision.datasets.ImageFolder(root=os.path.join(root, 'dtd', 'images'),
                                                       transform=preprocess)
         for data in imagenet_c:
-            aug_out_sets = []
-            aug_out_loaders = []
+            aug_ood_sets = []
+            aug_ood_loaders = []
             for aug_level in range(1,6):
                 aug_level = str(aug_level)
                 testset = torchvision.datasets.ImageFolder(root=f"{root_aug}" + "/dtd/images/" + data + "/" + aug_level,
                                                         transform=preprocess)
                 testloader = torch.utils.data.DataLoader(testset, batch_size=args.batch_size, shuffle=False, num_workers=4)
-                aug_out_sets.append(testset)
-                aug_out_loaders.append(testloader)
-            aug_out_loader_dict[data] = aug_out_loaders
+                aug_ood_sets.append(testset)
+                aug_ood_loaders.append(testloader)
+            aug_ood_loader_dict[data] = aug_ood_loaders
+    
+    elif out_dataset == 'SVHN':
+        # testsetout = torchvision.datasets.ImageFolder(root=os.path.join(root, 'svhn'),
+        #                                               transform=preprocess)
+        testsetout = svhn.SVHN(root=os.path.join(root, 'svhn'), split='test', transform=preprocess, download=False)
+        for data in imagenet_c:
+            aug_ood_sets = []
+            aug_ood_loaders = []
+            for aug_level in range(1,6):
+                aug_level = str(aug_level)
+                testset = torchvision.datasets.ImageFolder(root=f"{root_aug}" + "/svhn/" + data + "/" + aug_level,
+                                                        transform=preprocess)
+                testloader = torch.utils.data.DataLoader(testset, batch_size=args.batch_size, shuffle=False, num_workers=4)
+                aug_ood_sets.append(testset)
+                aug_ood_loaders.append(testloader)
+            aug_ood_loader_dict[data] = aug_ood_loaders
 
     elif out_dataset == 'ImageNet10':
         path = os.path.join(args.root_dir, out_dataset, 'train')
         path_aug = os.path.join(args.root_dir, out_dataset, 'Distorted', 'train')
         testsetout = datasets.ImageFolder(path, transform=preprocess)
         for data in imagenet_c:
-            aug_out_sets = []
-            aug_out_loaders = []
+            aug_ood_sets = []
+            aug_ood_loaders = []
             for aug_level in range(1,6):
                 aug_level = str(aug_level)
                 testset = torchvision.datasets.ImageFolder(root=f"{path_aug}" + "/" + data + "/" + aug_level, transform=preprocess)
                 testloader = torch.utils.data.DataLoader(testset, batch_size=args.batch_size, shuffle=False, num_workers=4)
 
-                aug_out_sets.append(testset)
-                aug_out_loaders.append(testloader)
-            aug_out_loader_dict[data] = aug_out_loaders
+                aug_ood_sets.append(testset)
+                aug_ood_loaders.append(testloader)
+            aug_ood_loader_dict[data] = aug_ood_loaders
 
     elif out_dataset in ["ImageNet20", "ImageNet100"]:
         path = os.path.join(args.root_dir, out_dataset, 'val')
         path_aug = os.path.join(args.root_dir, out_dataset, 'Distorted', 'val')
         testsetout = datasets.ImageFolder(path, transform=preprocess)
         for data in imagenet_c:
-            aug_out_sets = []
-            aug_out_loaders = []
+            aug_ood_sets = []
+            aug_ood_loaders = []
             for aug_level in range(1,6):
                 aug_level = str(aug_level)
                 testset = torchvision.datasets.ImageFolder(root=f"{path_aug}" + "/" + data + "/" + aug_level, transform=preprocess)
                 testloader = torch.utils.data.DataLoader(testset, batch_size=args.batch_size, shuffle=False, num_workers=4)
-                aug_out_sets.append(testset)
-                aug_out_loaders.append(testloader)
-            aug_out_loader_dict[data] = aug_out_loaders
+                aug_ood_sets.append(testset)
+                aug_ood_loaders.append(testloader)
+            aug_ood_loader_dict[data] = aug_ood_loaders
 
-    testloaderOut = torch.utils.data.DataLoader(testsetout, batch_size=args.batch_size,
+    ood_loader = torch.utils.data.DataLoader(testsetout, batch_size=args.batch_size,
                                                 shuffle=False, num_workers=4)
-    aug_out_loader_dict["origin"] = [testloaderOut]
+    aug_ood_loader_dict["origin"] = [ood_loader]
 
-    return testloaderOut, aug_out_loader_dict
+    return ood_loader, aug_ood_loader_dict
 

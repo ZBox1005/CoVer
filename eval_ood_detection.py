@@ -8,7 +8,7 @@ from utils.common import setup_seed, get_num_cls, get_test_labels
 from utils.detection_util import print_measures, get_and_print_results, get_ood_scores_clip, get_ood_scores_resnet
 from utils.file_ops import save_as_dataframe, setup_log
 from utils.plot_util import plot_distribution
-from utils.train_eval_util import set_model_clip, set_val_loader, set_ood_loader_ImageNet, set_model_resnet50
+from utils.train_eval_util import set_model_clip, set_model_resnet50, set_id_loader, set_ood_loader_ImageNet
 
 
 def process_args():
@@ -57,7 +57,18 @@ def process_args():
     return args
 
 
-# Select the corruption types for input expansion
+# --- Select the corruption types for input expansion ---
+# --- Recommend corruption types from validation set ---
+# imagenet_c = {
+#     "origin": tuple([1]),
+#     "brightness": tuple([1, 2]),
+#     "fog": tuple([1, 2]),
+#     "saturate": tuple([1, 2]),
+#     "motion_blur": tuple([1, 2]),
+#     "defocus_blur": tuple([1, 2]),
+#     "gaussian_blur": tuple([1, 2]),
+# }
+# ------
 imagenet_c = {
     # Fixed
     "origin": tuple([1]),
@@ -103,14 +114,21 @@ def main():
     # Following MCM
     if args.in_dataset in ['ImageNet10']:
         out_datasets = ['ImageNet20', 'ImageNet100']
+
     elif args.in_dataset in ['ImageNet20', 'ImageNet100']:
         out_datasets = ['ImageNet10']
+
     # ImageNet OOD detection benchmark
     elif args.in_dataset in ['ImageNet']:
+
+        # Test
         out_datasets = ['iNaturalist', 'SUN', 'places365', 'dtd']
 
+        # Validation
+        # out_datasets = ['SVHN']
+
     # Get original loader and aug loader dict for ID dataset
-    test_loader, in_aug_loader_dict = set_val_loader(args, preprocess)
+    test_loader, in_aug_loader_dict = set_id_loader(args, preprocess)
     test_labels = get_test_labels(args, test_loader)
 
     # ID set

@@ -9,7 +9,9 @@ What If the Input is Expanded in OOD Detection?
 
 This repository contains the source codes for reproducing the results of NeurIPS'24 paper: [**What If the Input is Expanded in OOD Detection?**]().
 
-**Author List**: Boxuan Zhang, Jianing Zhu, Zengmao Wang, Tongliang Liu, Bo Du, Bo Han. 
+**Author List**: *Boxuan Zhang, *Jianing Zhu, Zengmao Wang, Tongliang Liu, Bo Du, Bo Han.
+
+(* Equal Contribution)
 
 ## Required Packages
 

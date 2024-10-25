@@ -3,7 +3,7 @@ What If the Input is Expanded in OOD Detection?
 </h1>
 
 <p align='center'>
-<a href=""><img src="https://img.shields.io/badge/arXiv-1234.5678-b31b1b.svg" alt="Paper"></a> <a href="https://neurips.cc/"><img src="https://img.shields.io/badge/Pub-NeurIPS'24-blue" alt="Conf"></a> <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="Liscence"></a> <a href=""><img src="https://img.shields.io/badge/Project%20-D76364" alt="Slides"></a> <a href=""><img src="https://img.shields.io/badge/Poster%20-Ffa500" alt="Poster"></a> <a href="">
+<a href="https://arxiv.org/abs/2410.18472"><img src="https://img.shields.io/badge/arXiv-2410.18472-b31b1b.svg" alt="Paper"></a> <a href="https://neurips.cc/"><img src="https://img.shields.io/badge/Pub-NeurIPS'24-blue" alt="Conf"></a> <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="Liscence"></a> <a href=""><img src="https://img.shields.io/badge/Project%20-D76364" alt="Slides"></a> <a href=""><img src="https://img.shields.io/badge/Poster%20-Ffa500" alt="Poster"></a>
 
 </p>
 
